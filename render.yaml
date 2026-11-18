@@ -1,0 +1,30 @@
+# Despliegue en Render con "New > Blueprint" (lee este archivo). La base de datos es Neon (Postgres).
+services:
+  - type: web
+    name: asesor-pedagogico
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: APP_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true          # Render genera una clave aleatoria
+      - key: DATABASE_URL
+        sync: false                  # pégala en el panel: cadena "pooled" de Neon
+      - key: DOCENTE_NAME
+        value: Docente
+      - key: DOCENTE_EMAIL
+        sync: false
+      - key: DOCENTE_PASSWORD
+        sync: false
+      - key: LLM_BASE_URL
+        value: https://generativelanguage.googleapis.com/v1beta/openai/
+      - key: LLM_API_KEY
+        sync: false
+      - key: LLM_MODEL
+        value: gemini-3.8-flash
